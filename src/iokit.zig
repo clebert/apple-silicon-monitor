@@ -80,13 +80,6 @@ pub const HIDEventSystemClient = struct {
         return if (@intFromPtr(ref) == 0) null else .{ .ref = ref };
     }
 
-    pub fn setMatching(self: @This(), matching: corefoundation.Dictionary(
-        corefoundation.String,
-        corefoundation.Number(i32),
-    )) void {
-        _ = IOHIDEventSystemClientSetMatching(self.ref, matching.ref);
-    }
-
     pub fn setTemperatureSensorMatching(self: @This()) void {
         var primary_usage_page_key = corefoundation.String.createWithCString("PrimaryUsagePage").?;
 
@@ -116,7 +109,7 @@ pub const HIDEventSystemClient = struct {
 
         defer temperature_sensor_matching.release();
 
-        self.setMatching(temperature_sensor_matching);
+        _ = IOHIDEventSystemClientSetMatching(self.ref, temperature_sensor_matching.ref);
     }
 };
 
