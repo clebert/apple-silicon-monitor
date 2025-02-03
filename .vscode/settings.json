@@ -1,0 +1,26 @@
+{
+  "editor.formatOnSave": true,
+  "editor.rulers": [
+    100
+  ],
+  "editor.semanticTokenColorCustomizations": {
+    "rules": {
+      "*.deprecated": {
+        "strikethrough": true
+      }
+    }
+  },
+  "zig.zls.enabled": "on",
+  "zig.buildArgs": [
+    "check"
+  ],
+  "[zig]": {
+    "editor.inlayHints.enabled": "off",
+    "editor.suggest.insertMode": "replace",
+    "editor.stickyScroll.defaultModel": "foldingProviderModel",
+    "editor.codeActionsOnSave": {
+      "source.fixAll": "explicit",
+      "source.organizeImports": "explicit",
+    }
+  }
+}
