@@ -1,10 +1,5 @@
 const corefoundation = @import("corefoundation.zig");
 
-/// https://github.com/acidanthera/MacKernelSDK/blob/a2ba595133100d5d3bba02c54819b46b792ed6aa/Headers/IOKit/hid/AppleHIDUsageTables.h
-pub const kHIDPage_AppleVendor = 0xFF00;
-pub const kHIDUsage_AppleVendor_TemperatureSensor = 0x0005;
-pub const kIOHIDEventTypeTemperature = 15;
-
 pub const IOHIDEventRef = *anyopaque;
 
 /// https://developer.apple.com/documentation/iokit/iohideventsystemclientref?language=objc
@@ -45,6 +40,8 @@ pub extern "c" fn IOHIDServiceClientCopyProperty(
 pub fn IOHIDEventFieldBase(@"type": i64) i32 {
     return @intCast(@"type" << 16);
 }
+
+const kIOHIDEventTypeTemperature = 15;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -88,6 +85,38 @@ pub const HIDEventSystemClient = struct {
         corefoundation.Number(i32),
     )) void {
         _ = IOHIDEventSystemClientSetMatching(self.ref, matching.ref);
+    }
+
+    pub fn setTemperatureSensorMatching(self: @This()) void {
+        var primary_usage_page_key = corefoundation.String.createWithCString("PrimaryUsagePage").?;
+
+        defer primary_usage_page_key.release();
+
+        // https://github.com/acidanthera/MacKernelSDK/blob/a2ba595133100d5d3bba02c54819b46b792ed6aa/Headers/IOKit/hid/AppleHIDUsageTables.h#L35
+        var primary_usage_page_value = corefoundation.Number(i32).create(0xFF00).?;
+
+        defer primary_usage_page_value.release();
+
+        var primary_usage_key = corefoundation.String.createWithCString("PrimaryUsage").?;
+
+        defer primary_usage_key.release();
+
+        // https://github.com/acidanthera/MacKernelSDK/blob/a2ba595133100d5d3bba02c54819b46b792ed6aa/Headers/IOKit/hid/AppleHIDUsageTables.h#L68
+        var primary_usage_value = corefoundation.Number(i32).create(5).?;
+
+        defer primary_usage_value.release();
+
+        var temperature_sensor_matching = corefoundation.Dictionary(
+            corefoundation.String,
+            corefoundation.Number(i32),
+        ).create(
+            &.{ primary_usage_page_key.ref, primary_usage_key.ref },
+            &.{ primary_usage_page_value.ref, primary_usage_value.ref },
+        ).?;
+
+        defer temperature_sensor_matching.release();
+
+        self.setMatching(temperature_sensor_matching);
     }
 };
 

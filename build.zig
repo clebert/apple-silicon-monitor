@@ -26,14 +26,7 @@ pub fn build(b: *std.Build) !void {
 
     run_step.dependOn(&run_exe.step);
 
-    const exe_check = b.addExecutable(.{
-        .name = "asm",
-        .root_source_file = b.path("src/main.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-
     const check_step = b.step("check", "Check the application"); // zig build check
 
-    check_step.dependOn(&exe_check.step);
+    check_step.dependOn(&exe.step);
 }

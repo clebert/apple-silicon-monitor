@@ -29,16 +29,6 @@ pub const CFNumberType = enum(CFIndex) {
     kCFNumberSInt64Type = 4,
     kCFNumberFloat32Type = 5,
     kCFNumberFloat64Type = 6,
-    kCFNumberCharType = 7,
-    kCFNumberShortType = 8,
-    kCFNumberIntType = 9,
-    kCFNumberLongType = 10,
-    kCFNumberLongLongType = 11,
-    kCFNumberFloatType = 12,
-    kCFNumberDoubleType = 13,
-    kCFNumberCFIndexType = 14,
-    kCFNumberNSIntegerType = 15,
-    kCFNumberCGFloatType = 16,
 };
 
 /// https://developer.apple.com/documentation/corefoundation/cfstringencoding?language=objc
@@ -75,9 +65,6 @@ pub extern "c" fn CFNumberCreate(
     theType: CFNumberType,
     valuePtr: *const anyopaque,
 ) CFNumberRef;
-
-/// https://developer.apple.com/documentation/corefoundation/1543388-cfnumbergettype?language=objc
-pub extern "c" fn CFNumberGetType(number: CFNumberRef) CFNumberType;
 
 /// https://developer.apple.com/documentation/corefoundation/1543114-cfnumbergetvalue?language=objc
 pub extern "c" fn CFNumberGetValue(
