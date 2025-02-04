@@ -1,7 +1,5 @@
 const std = @import("std");
 
-const corefoundation = @import("corefoundation.zig");
-const iokit = @import("iokit.zig");
 const Temperature = @import("temperature.zig");
 const VT100 = @import("vt100.zig");
 
