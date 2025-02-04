@@ -6,6 +6,11 @@ const esc = "\x1b";
 const ControlCommand = enum { cursorPosition, eraseInLine };
 
 pub const ControlSequence = union(ControlCommand) {
+    pub const style_default = esc ++ "[0m";
+    pub const style_green = esc ++ "[32m";
+    pub const style_red = esc ++ "[31m";
+    pub const style_yellow = esc ++ "[33m";
+
     /// https://vt100.net/docs/vt100-ug/chapter3.html#CUP
     cursorPosition: struct { line: u64 = 1, column: u64 = 1 },
 

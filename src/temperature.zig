@@ -3,7 +3,27 @@ const std = @import("std");
 const corefoundation = @import("corefoundation.zig");
 const iokit = @import("iokit.zig");
 
-const Sensor = struct { current_temperature: f64, max_temperature: f64, min_temperature: f64 };
+pub const Sensor = struct {
+    pub const Color = enum { green, red, yellow };
+
+    current_temperature: f64,
+    max_temperature: f64,
+    min_temperature: f64,
+
+    pub fn getColor(self: @This()) Color {
+        const temperature_range = self.max_temperature - self.min_temperature;
+
+        if (temperature_range < std.math.floatEps(f64)) return .yellow;
+
+        const normalized_temperature =
+            (self.current_temperature - self.min_temperature) / temperature_range;
+
+        if (normalized_temperature < 0.4) return .green;
+        if (normalized_temperature < 0.7) return .yellow;
+
+        return .red;
+    }
+};
 
 sensor_by_name: *std.StringArrayHashMap(Sensor),
 

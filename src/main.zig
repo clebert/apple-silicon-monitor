@@ -29,10 +29,18 @@ pub fn main() !void {
 
             try VT100.ControlSequence.write(.{ .eraseInLine = .end }, stdout);
 
+            const style_color = switch (sensor.getColor()) {
+                .green => VT100.ControlSequence.style_green,
+                .red => VT100.ControlSequence.style_red,
+                .yellow => VT100.ControlSequence.style_yellow,
+            };
+
             try stdout.print(
-                "current: {d:.2}°C | max: {d:.2}°C | min: {d:.2}°C | {s}\n",
+                "current: {s}{d:.2}°C{s} | max: {d:.2}°C | min: {d:.2}°C | {s}\n",
                 .{
+                    style_color,
                     sensor.current_temperature,
+                    VT100.ControlSequence.style_default,
                     sensor.max_temperature,
                     sensor.min_temperature,
                     sensor_name,
