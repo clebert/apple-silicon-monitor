@@ -2,38 +2,50 @@ const std = @import("std");
 
 const corefoundation = @import("corefoundation.zig");
 const iokit = @import("iokit.zig");
+const Temperature = @import("temperature.zig");
+const VT100 = @import("vt100.zig");
 
 pub fn main() !void {
-    var event_system = iokit.HIDEventSystemClient.create().?;
+    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
 
-    defer event_system.release();
+    defer if (gpa.deinit() == .leak) unreachable;
 
-    event_system.setTemperatureSensorMatching();
+    const allocator = gpa.allocator();
 
-    var services = event_system.copyServices().?;
+    var temperature = try Temperature.init(allocator);
 
-    defer services.release();
+    defer temperature.deinit();
 
-    std.debug.print("Found {d} temperature sensors:\n\n", .{services.getCount()});
+    const stdout = std.io.getStdOut().writer();
 
-    var product_key = corefoundation.String.createWithCString("Product").?;
+    while (true) {
+        try temperature.readAllSensors();
 
-    defer product_key.release();
+        try VT100.ControlSequence.write(.{ .cursorPosition = .{} }, stdout);
 
-    for (0..services.getCount()) |index| {
-        const service = services.getValueAtIndex(index);
+        var iterator = temperature.sensor_by_name.iterator();
 
-        var temperature_event = service.copyTemperatureEvent() orelse continue;
+        while (iterator.next()) |entry| {
+            const sensor_name = entry.key_ptr.*;
+            const sensor = entry.value_ptr.*;
 
-        defer temperature_event.release();
+            try VT100.ControlSequence.write(.{ .eraseInLine = .end }, stdout);
 
-        const temperature_value = temperature_event.getTemperatureValue();
+            try stdout.print(
+                "current: {d:.2}°C | max: {d:.2}°C | min: {d:.2}°C | {s}\n",
+                .{
+                    sensor.current_temperature,
+                    sensor.max_temperature,
+                    sensor.min_temperature,
+                    sensor_name,
+                },
+            );
+        }
 
-        var product = service.copyProperty(corefoundation.String, product_key) orelse
-            corefoundation.String.createWithCString("unknown").?;
-
-        defer product.release();
-
-        std.debug.print("{d:.2}°C ({s})\n", .{ temperature_value, product.getSlice() });
+        std.Thread.sleep(500_000_000); // 500 ms
     }
+}
+
+test {
+    std.testing.refAllDecls(@This());
 }

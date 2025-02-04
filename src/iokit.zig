@@ -1,12 +1,12 @@
 const corefoundation = @import("corefoundation.zig");
 
-pub const IOHIDEventRef = *anyopaque;
+pub const IOHIDEventRef = *opaque {};
 
 /// https://developer.apple.com/documentation/iokit/iohideventsystemclientref?language=objc
-pub const IOHIDEventSystemClientRef = *anyopaque;
+pub const IOHIDEventSystemClientRef = *opaque {};
 
 /// https://developer.apple.com/documentation/iokit/iohidserviceclientref?language=objc
-pub const IOHIDServiceClientRef = *anyopaque;
+pub const IOHIDServiceClientRef = *opaque {};
 
 pub extern "c" fn IOHIDEventGetFloatValue(event: IOHIDEventRef, field: i32) f64;
 
@@ -131,6 +131,6 @@ pub const HIDServiceClient = struct {
     pub fn copyProperty(self: @This(), comptime T: type, key: corefoundation.String) ?T {
         const ref = IOHIDServiceClientCopyProperty(self.ref, key.ref);
 
-        return if (@intFromPtr(ref) == 0) null else .{ .ref = ref };
+        return if (@intFromPtr(ref) == 0) null else .{ .ref = @ptrCast(ref) };
     }
 };

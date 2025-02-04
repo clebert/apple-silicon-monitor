@@ -1,25 +1,25 @@
 const std = @import("std");
 
 /// https://developer.apple.com/documentation/corefoundation/cfallocatorref?language=objc
-pub const CFAllocatorRef = *anyopaque;
+pub const CFAllocatorRef = *opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cfarrayref?language=objc
-pub const CFArrayRef = *anyopaque;
+pub const CFArrayRef = *opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cfdictionarykeycallbacks?language=objc
-pub const CFDictionaryKeyCallBacks = anyopaque;
+pub const CFDictionaryKeyCallBacks = opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cfdictionaryref?language=objc
-pub const CFDictionaryRef = *anyopaque;
+pub const CFDictionaryRef = *opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cfdictionaryvaluecallbacks?language=objc
-pub const CFDictionaryValueCallBacks = anyopaque;
+pub const CFDictionaryValueCallBacks = opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cfindex?language=objc
 pub const CFIndex = i64;
 
 /// https://developer.apple.com/documentation/corefoundation/cfnumberref?language=objc
-pub const CFNumberRef = *anyopaque;
+pub const CFNumberRef = *opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cfnumbertype?language=objc
 pub const CFNumberType = enum(CFIndex) {
@@ -38,7 +38,7 @@ pub const CFStringEncoding = u32;
 pub const CFStringBuiltInEncodings = enum(CFStringEncoding) { kCFStringEncodingUTF8 = 0x08000100 };
 
 /// https://developer.apple.com/documentation/corefoundation/cfstringref?language=objc
-pub const CFStringRef = *anyopaque;
+pub const CFStringRef = *opaque {};
 
 /// https://developer.apple.com/documentation/corefoundation/cftyperef?language=objc
 pub const CFTypeRef = *anyopaque;
@@ -115,7 +115,7 @@ pub fn Array(comptime T: type) type {
         }
 
         pub fn getValueAtIndex(self: @This(), index: usize) T {
-            return .{ .ref = CFArrayGetValueAtIndex(self.ref, @intCast(index)) };
+            return .{ .ref = @ptrCast(CFArrayGetValueAtIndex(self.ref, @intCast(index))) };
         }
     };
 }
@@ -132,8 +132,8 @@ pub fn Dictionary(comptime K: type, comptime V: type) type {
 
             const ref = CFDictionaryCreate(
                 kCFAllocatorDefault,
-                key_refs.ptr,
-                value_refs.ptr,
+                @ptrCast(key_refs.ptr),
+                @ptrCast(value_refs.ptr),
                 @intCast(key_refs.len),
                 &kCFTypeDictionaryKeyCallBacks,
                 &kCFTypeDictionaryValueCallBacks,
