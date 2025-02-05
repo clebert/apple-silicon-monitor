@@ -1,8 +1,5 @@
 {
   "editor.formatOnSave": true,
-  "editor.rulers": [
-    100
-  ],
   "editor.semanticTokenColorCustomizations": {
     "rules": {
       "*.deprecated": {
@@ -11,6 +8,7 @@
     }
   },
   "zig.zls.enabled": "on",
+  "zig.zls.enableBuildOnSave": true,
   "zig.buildArgs": [
     "check"
   ],
