@@ -8,14 +8,9 @@
     }
   },
   "zig.zls.enabled": "on",
-  "zig.zls.enableBuildOnSave": true,
-  "zig.buildArgs": [
-    "check"
-  ],
   "[zig]": {
     "editor.inlayHints.enabled": "off",
     "editor.suggest.insertMode": "replace",
-    "editor.stickyScroll.defaultModel": "foldingProviderModel",
     "editor.codeActionsOnSave": {
       "source.fixAll": "explicit",
       "source.organizeImports": "explicit",

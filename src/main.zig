@@ -1,14 +1,23 @@
 const std = @import("std");
+const builtin = @import("builtin");
 
 const Temperature = @import("temperature.zig");
 const VT100 = @import("vt100.zig");
 
 pub fn main() !void {
-    var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+    var debug_allocator: std.heap.DebugAllocator(.{}) = .init;
 
-    defer if (gpa.deinit() == .leak) unreachable;
+    const allocator, const is_debug = allocator: {
+        if (builtin.os.tag == .wasi) break :allocator .{ std.heap.wasm_allocator, false };
 
-    const allocator = gpa.allocator();
+        break :allocator switch (builtin.mode) {
+            .Debug, .ReleaseSafe => .{ debug_allocator.allocator(), true },
+            // https://github.com/ziglang/zig/pull/22808
+            .ReleaseFast, .ReleaseSmall => .{ std.heap.smp_allocator, false },
+        };
+    };
+
+    defer if (is_debug and debug_allocator.deinit() == .leak) unreachable;
 
     var temperature = try Temperature.init(allocator);
 
